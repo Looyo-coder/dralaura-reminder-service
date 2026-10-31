@@ -339,8 +339,13 @@ describe("motor de recordatorios y webhook", () => {
     );
     expect(mocks.appointmentUpdate).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("APPOINTMENT_ACTION_REQUIRED"),
+      JSON.stringify({
+        appointmentId: appointment.id,
+        status: "ACTION_REQUIRED",
+      }),
     );
+    expect(errorSpy.mock.calls.flat().join(" ")).not.toContain(patient.fullName);
+    expect(errorSpy.mock.calls.flat().join(" ")).not.toContain(patient.phone);
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith({
       status: "ACTION_REQUIRED",

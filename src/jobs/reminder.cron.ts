@@ -101,14 +101,16 @@ export async function processAppointmentReminders(
           appointmentAt: calendarAppointment.startAt,
           reminderType,
         });
-      } catch (error: unknown) {
+      } catch {
         await prisma.appointmentReminder.update({
           where: { id: reminder.id },
           data: { status: "FAILED" },
         });
         console.error(
-          `No se pudo enviar el recordatorio ${reminder.id} para la cita ${appointment.id}.`,
-          error,
+          JSON.stringify({
+            appointmentId: appointment.id,
+            status: "FAILED",
+          }),
         );
         continue;
       }
@@ -127,8 +129,8 @@ export function startReminderCron(): ScheduledTask {
     async () => {
       try {
         await processAppointmentReminders();
-      } catch (error: unknown) {
-        console.error("Falló la ejecución del cron de recordatorios.", error);
+      } catch {
+        console.error("Falló la ejecución del cron de recordatorios.");
       }
     },
     { noOverlap: true, name: "appointment-reminders" },

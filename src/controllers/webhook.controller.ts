@@ -140,7 +140,7 @@ export async function handleWhatsAppWebhook(
     return;
   }
 
-  const { appointment, reminder } = matchingAppointment;
+  const { reminder } = matchingAppointment;
   const nextStatus = reply.response === "1" ? "CONFIRMED" : "ACTION_REQUIRED";
   const updated = await prisma.$transaction(async (transaction) => {
     const updateResult = await transaction.appointmentReminder.updateMany({
@@ -172,12 +172,8 @@ export async function handleWhatsAppWebhook(
   if (reply.response === "2") {
     console.error(
       JSON.stringify({
-        alert: "APPOINTMENT_ACTION_REQUIRED",
         appointmentId: reminder.appointmentId,
-        reminderId: reminder.id,
-        patientName: appointment.patient.fullName,
-        phone: appointment.patient.phone,
-        response: reply.response,
+        status: nextStatus,
       }),
     );
   }
