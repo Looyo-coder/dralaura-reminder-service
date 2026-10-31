@@ -8,6 +8,7 @@ coverage/
 .cache/
 *.log
 npm-debug.log*
+pnpm-debug.log*
 *.tmp
 *.temp
 *.swp

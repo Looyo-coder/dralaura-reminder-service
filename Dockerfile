@@ -1,22 +1,26 @@
-FROM node:22-bookworm-slim AS build
+FROM node:24-bookworm-slim AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY prisma ./prisma
 COPY prisma.config.ts tsconfig.json tsconfig.build.json ./
 COPY src ./src
 
-RUN npx prisma generate \
-    && npm run build \
-    && npm prune --omit=dev
+RUN pnpm exec prisma generate \
+    && pnpm build \
+    && pnpm prune --prod
 
-FROM node:22-bookworm-slim AS production
+FROM node:24-bookworm-slim AS production
 
 ENV NODE_ENV=production
 WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY --from=build --chown=node:node /app/package.json ./package.json
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
@@ -25,4 +29,4 @@ COPY --from=build --chown=node:node /app/dist ./dist
 USER node
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["pnpm", "start"]

@@ -11,7 +11,7 @@ respuestas para confirmar la asistencia o solicitar seguimiento del equipo.
 
 ## Stack tecnológico
 
-- **Node.js 22** y **TypeScript estricto** (`strict`, sin `any`).
+- **Node.js 24 LTS** y **TypeScript estricto** (`strict`, sin `any`).
 - **Prisma 7** como ORM y **PostgreSQL 17** como base de datos.
 - **Node-Cron** para procesar las ventanas de recordatorio.
 - **Express** para el endpoint de webhook de WhatsApp.
@@ -50,7 +50,7 @@ docker-compose.yml      Aplicación y PostgreSQL
 
 ## Requisitos previos
 
-- Node.js **22.x** y npm.
+- Node.js **24.x** con Corepack y pnpm.
 - Docker Engine con el plugin Docker Compose v2 (para usar la base local o
   desplegar).
 - Credenciales válidas de Google Calendar y un proveedor WhatsApp para enviar
@@ -81,8 +81,10 @@ docker-compose.yml      Aplicación y PostgreSQL
 3. Instala dependencias y levanta PostgreSQL:
 
    ```sh
-   npm ci
-   npx prisma generate
+   corepack enable
+   corepack prepare pnpm@latest --activate
+   pnpm install --frozen-lockfile
+   pnpm exec prisma generate
    docker compose up -d postgres
    ```
 
@@ -96,7 +98,7 @@ docker-compose.yml      Aplicación y PostgreSQL
    set -a
    . ./.env
    set +a
-   npx prisma db push
+   pnpm exec prisma db push
    ```
 
    El repositorio actualmente define el schema, pero no contiene migraciones
@@ -116,15 +118,15 @@ docker-compose.yml      Aplicación y PostgreSQL
 6. Ejecuta las pruebas y verifica tipos:
 
    ```sh
-   npm test
-   npm run typecheck
+   pnpm test
+   pnpm tsc --noEmit
    ```
 
 7. Compila e inicia el servicio:
 
    ```sh
-   npm run build
-   npm start
+   pnpm build
+   pnpm start
    ```
 
    El servidor escucha en el puerto `PORT` (3000 por defecto) e inicia el cron
@@ -141,8 +143,8 @@ ssh usuario@servidor
 ```
 
 Instala Git, Docker Engine y el plugin Compose v2 siguiendo las instrucciones
-oficiales para la distribución Linux elegida. Node.js 22 y npm también son
-necesarios en el host para inicializar el schema con Prisma.
+oficiales para la distribución Linux elegida. Node.js 24 con Corepack y pnpm
+también son necesarios en el host para inicializar el schema con Prisma.
 
 ### 2. Obtener el código y configurar secretos
 
@@ -165,8 +167,10 @@ chmod 600 .env
 ### 3. Inicializar la base de datos
 
 ```sh
-npm ci
-npx prisma generate
+corepack enable
+corepack prepare pnpm@latest --activate
+pnpm install --frozen-lockfile
+pnpm exec prisma generate
 docker compose up -d postgres
 ```
 
@@ -176,7 +180,7 @@ Espera a que PostgreSQL pase el healthcheck y aplica el schema inicial:
 set -a
 . ./.env
 set +a
-npx prisma db push
+pnpm exec prisma db push
 ```
 
 ### 4. Construir y arrancar la aplicación

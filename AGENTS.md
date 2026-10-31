@@ -16,6 +16,6 @@
 - No incluir datos personales, credenciales ni secretos en logs, código fuente o repositorios.
 
 ## Protocolos de cierre
-- Antes de cerrar cambios, ejecutar `npx tsc --noEmit`.
-- Antes de cerrar cambios, ejecutar `npx vitest run`.
+- Antes de cerrar cambios, ejecutar `pnpm tsc --noEmit`.
+- Antes de cerrar cambios, ejecutar `pnpm test`.
 - Resolver cualquier error de tipado o prueba antes de dar el trabajo por terminado.
