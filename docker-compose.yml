@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dental_clinic}
+      POSTGRES_USER: ${POSTGRES_USER:-dental}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dental}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dental}:${POSTGRES_PASSWORD:-dental}@postgres:5432/${POSTGRES_DB:-dental_clinic}?schema=public
+      GOOGLE_CALENDAR_ACCESS_TOKEN: ${GOOGLE_CALENDAR_ACCESS_TOKEN:-}
+      GOOGLE_CALENDAR_ID: ${GOOGLE_CALENDAR_ID:-}
+      WHATSAPP_PROVIDER: ${WHATSAPP_PROVIDER:-simulated}
+      WHATSAPP_API_URL: ${WHATSAPP_API_URL:-}
+      WHATSAPP_API_KEY: ${WHATSAPP_API_KEY:-}
+      WHATSAPP_INSTANCE: ${WHATSAPP_INSTANCE:-}
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

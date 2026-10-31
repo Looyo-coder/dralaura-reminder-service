@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum AppointmentReminderType {
+  HOURS_24
+  HOURS_2
+}
+
+enum AppointmentReminderStatus {
+  PENDING
+  SENT
+  CONFIRMED
+  ACTION_REQUIRED
+  FAILED
+}
+
+model Patient {
+  id           String        @id @default(cuid())
+  fullName     String
+  phone        String
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
+}
+
+model Appointment {
+  id           String               @id @default(cuid())
+  patientId    String
+  googleEventId String              @unique
+  scheduledAt  DateTime
+  status       AppointmentStatus    @default(SCHEDULED)
+  patient      Patient              @relation(fields: [patientId], references: [id])
+  reminders    AppointmentReminder[]
+
+  @@index([patientId])
+}
+
+model AppointmentReminder {
+  id            String                    @id @default(cuid())
+  appointmentId String
+  type          AppointmentReminderType
+  status        AppointmentReminderStatus @default(PENDING)
+  response      String?
+  appointment   Appointment              @relation(fields: [appointmentId], references: [id])
+
+  @@unique([appointmentId, type])
+}

@@ -1,0 +1,27 @@
+{
+  "name": "consultorio-dental-laura",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "express": "^5.0.0",
+    "node-cron": "^4.0.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.10.1",
+    "typescript": "^5.0.0",
+    "vitest": "^5.0.5"
+  }
+}
